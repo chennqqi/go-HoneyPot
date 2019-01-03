@@ -1,15 +1,23 @@
 package main
 
 import (
-	"github.com/mojachieee/go-HoneyPot/config"
-	"github.com/mojachieee/go-HoneyPot/database"
-	"github.com/mojachieee/go-HoneyPot/tcp"
+	"fmt"
+
+	"github.com/chennqqi/go-HoneyPot/config"
+	"github.com/chennqqi/go-HoneyPot/tcp"
 )
 
 func main() {
-	cfg := config.Read()
-	db := database.InitDatabase(cfg.DB)
-	defer db.Close()
-	tcpServer := tcp.NewServer(cfg.TCP.Ports)
-	tcpServer.Start(db, cfg.DB)
+	cfg, err := config.Read()
+	if err != nil {
+		fmt.Println("read config error:", err)
+		return
+	}
+
+	tcpServer, err := tcp.NewServer(&cfg)
+	if err != nil {
+		fmt.Println("NewServer error:", err)
+		return
+	}
+	tcpServer.Run()
 }
