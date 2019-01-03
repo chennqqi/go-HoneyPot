@@ -93,15 +93,17 @@ func handleConnection(conn net.Conn, rpt report.Reporter) {
 	var srcport, dstport int64
 	fmt.Sscanf(remPort, "%d", &srcport)
 	fmt.Sscanf(locPort, "%d", &dstport)
-	err = rpt.Pub(&report.HoneypotRecord{
+	rcd := &report.HoneypotRecord{
 		Src:     remHost,
 		Dst:     locHost,
 		Srcport: srcport,
 		Dstport: dstport,
 		Payload: string(data[:n]),
 		Raw:     data[:n],
-		Time:    report.Time(time.Now()),
-	})
+	}
+	rcd.Time.FromTime(time.Now())
+
+	err = rpt.Pub(rcd)
 	if err != nil {
 		logrus.Errorf("[tcp.go] rpt.Pub error: %v", err)
 	}
