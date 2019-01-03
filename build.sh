@@ -8,7 +8,7 @@ mkdir -p bin
 
 function compress() {
 	upxexist=`ls tools|grep upx|wc -l`
-	if [ $upxexist!="1" ] ; then
+	if [ $upxexist == "0" ] ; then
 		wget -O upx.tar.xz https://github.com/upx/upx/releases/download/v3.95/upx-3.95-amd64_linux.tar.xz
 		tar xvf upx.tar.xz -C tools
 		mv tools/upx-3.95-amd64_linux/upx tools/
@@ -22,7 +22,7 @@ case $param in
 	go build -o "bin/$app"
         ;;
     release)
-	go install -o "$app" -ldflags "-w -s"
+	go build -o "bin/$app" -ldflags "-w -s"
 	compress
         ;;
     *)

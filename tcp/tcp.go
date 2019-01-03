@@ -13,6 +13,10 @@ import (
 	"github.com/chennqqi/go-HoneyPot/report"
 )
 
+const (
+	MAXBYTES = 8192
+)
+
 // Server is the tcp server struct
 type Server struct {
 	Ports []string
@@ -34,7 +38,7 @@ func NewServer(cfg *config.Config) (*Server, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Server{cfg.TCP.Ports, rpt, cfg.MaxBytes}, nil
+	return &Server{cfg.TCP.Ports, rpt}, nil
 }
 
 // Start starts the tcp server
@@ -67,7 +71,7 @@ func (t *Server) Run() {
 }
 
 func handleConnection(conn net.Conn, rpt report.Reporter) {
-	data := make([]byte, 8192)
+	data := make([]byte, MAXBYTES)
 	n, err := conn.Read(data)
 	if err != nil {
 		logrus.Errorf("[tcp.go] Read connection data error:", err)
