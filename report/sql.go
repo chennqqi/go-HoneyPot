@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/chennqqi/go-HoneyPot/config"
-
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -40,7 +39,7 @@ func NewSqlReporter(cfg *config.Database) (Reporter, error) {
 			srcport int not null,
 			dstport int not null,
 			atime TIMESTAMP not null DEFAULT CURRENT_TIMESTAMP,
-			payload VARBINARY(4096),
+			payload TEXT,
 			raw BLOB, 
 			PRIMARY KEY (id)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -52,8 +51,7 @@ func NewSqlReporter(cfg *config.Database) (Reporter, error) {
 
 func (r *ormReport) Pub(p *HoneypotRecord) error {
 	db := r.db
-	_, err := db.Exec(`INSERT INTO tbl_honeypot(src, dst, srcport, dstport, payload, raw)
-		VALUES($1, $2, $3, $4, $5, $6)`,
+	_, err := db.Exec(`INSERT INTO tbl_honeypot(src, dst, srcport, dstport, payload, raw) VALUES(?, ?, ?, ?, ?, ?)`,
 		p.Src, p.Dst, p.Srcport, p.Dstport, p.Payload, sql.RawBytes(p.Raw))
 	return err
 }

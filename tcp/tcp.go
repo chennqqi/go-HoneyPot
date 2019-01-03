@@ -34,7 +34,7 @@ func NewServer(cfg *config.Config) (*Server, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Server{cfg.TCP.Ports, rpt}, nil
+	return &Server{cfg.TCP.Ports, rpt, cfg.MaxBytes}, nil
 }
 
 // Start starts the tcp server
@@ -67,8 +67,7 @@ func (t *Server) Run() {
 }
 
 func handleConnection(conn net.Conn, rpt report.Reporter) {
-	fmt.Println("connection")
-	data := make([]byte, 4096)
+	data := make([]byte, 8192)
 	n, err := conn.Read(data)
 	if err != nil {
 		logrus.Errorf("[tcp.go] Read connection data error:", err)
@@ -77,7 +76,6 @@ func handleConnection(conn net.Conn, rpt report.Reporter) {
 	}
 	defer conn.Close()
 
-	logrus.Errorf("[tcp.go] Received data from %v, of length %v data is %v", conn.RemoteAddr(), n, data[:n])
 	remHost, remPort, err := net.SplitHostPort(conn.RemoteAddr().String())
 	if err != nil {
 		logrus.Errorf("[tcp.go] SplitHostPort error: %v", err)
@@ -85,7 +83,7 @@ func handleConnection(conn net.Conn, rpt report.Reporter) {
 	}
 	locHost, locPort, err := net.SplitHostPort(conn.LocalAddr().String())
 	if err != nil {
-		logrus.Errorf("[tcp.go] SFailed to split remote host and port: %v", err)
+		logrus.Errorf("[tcp.go] Failed to split remote host and port: %v", err)
 		return
 	}
 	var srcport, dstport int64

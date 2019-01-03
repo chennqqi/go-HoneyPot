@@ -26,6 +26,8 @@ func (r *httpReport) Pub(p *HoneypotRecord) error {
 	txt, _ := json.Marshal(p)
 	rd := bytes.NewBuffer(txt)
 	req, _ := http.NewRequest("POST", r.Url, rd)
+	req.Header.Set("Content-Type", "application/json")
+
 	client := r.client
 	resp, err := client.Do(req)
 	if err != nil {
