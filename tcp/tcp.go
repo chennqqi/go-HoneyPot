@@ -94,12 +94,13 @@ func handleConnection(conn net.Conn, rpt report.Reporter) {
 	fmt.Sscanf(remPort, "%d", &srcport)
 	fmt.Sscanf(locPort, "%d", &dstport)
 	rcd := &report.HoneypotRecord{
-		Src:     remHost,
-		Dst:     locHost,
-		Srcport: srcport,
-		Dstport: dstport,
-		Payload: string(data[:n]),
-		Raw:     data[:n],
+		Src:      remHost,
+		Dst:      locHost,
+		Srcport:  srcport,
+		Dstport:  dstport,
+		Protocol: "tcp",
+		Payload:  string(data[:n]),
+		Raw:      data[:n],
 	}
 	rcd.Time.FromTime(time.Now())
 
